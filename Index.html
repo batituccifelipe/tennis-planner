@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tennis Family Tour Planner 2026-2027</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #1a1a1a; background: #f9f9f7; padding: 20px; }
+    .container { max-width: 1400px; margin: 0 auto; }
+    
+    .header { background: white; padding: 2rem; border-radius: 12px; margin-bottom: 2rem; box-shadow: 0 1px 3px rgba(0,0,0,0.08); }
+    .header h1 { font-size: 32px; margin-bottom: 0.5rem; }
+    .header p { color: #666; font-size: 15px; margin-bottom: 1rem; }
+    
+    .toolbar { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 2rem; }
+    .btn { padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.2s; }
+    .btn-primary { background: #185fa5; color: white; }
+    .btn-primary:hover { background: #0c447c; }
+    .btn-secondary { background: white; color: #185fa5; border: 1px solid #185fa5; }
+    .btn-secondary:hover { background: #e6f1fb; }
+    .btn-success { background: #3b6d11; color: white; }
+    .btn-success:hover { background: #27500a; }
+    .btn-danger { background: #a32d2d; color: white; }
+    .btn-danger:hover { background: #791f1f; }
+    .btn-update { background: linear-gradient(135deg, #7b2ff7, #5b1fc0); color: white; font-weight: 600; box-shadow: 0 2px 8px rgba(123,47,247,0.3); }
+    .btn-update:hover { background: linear-gradient(135deg, #6a1fe0, #4a0fa8); box-shadow: 0 4px 12px rgba(123,47,247,0.4); }
+    
+    .filters { display: flex; gap: 12px; margin-bottom: 2rem; flex-wrap: wrap; }
+    .filter-group { display: flex; gap: 8px; align-items: center; }
+    .filter-group label { font-size: 14px; font-weight: 500; color: #333; }
+    select, input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+    select:focus, input:focus { outline: none; border-color: #185fa5; box-shadow: 0 0 0 3px rgba(24,95,165,0.1); }
+    
+    .tabs { display: flex; gap: 0; border-bottom: 1px solid #ddd; margin-bottom: 2rem; background: white; border-radius: 8px 8px 0 0; }
+    .tab { padding: 12px 24px; cursor: pointer; border: none; background: none; font-size: 14px; font-weight: 500; color: #666; border-bottom: 2px solid transparent; }
+    .tab.active { color: #185fa5; border-bottom-color: #185fa5; }
+    
+    .content { display: none; }
+    .content.active { display: block; }
+    
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 16px; }
+    
+    .card { background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 1.5rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05); transition: all 0.2s; position: relative; }
+    .card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-2px); }
+    
+    .card-header { margin-bottom: 1rem; }
+    .card-title { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+    .card-subtitle { font-size: 13px; color: #666; }
+    
+    .badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 11px; font-weight: 600; text-transform: uppercase; margin-bottom: 12px; }
+    .badge-grandslam { background: #fef1d1; color: #854f0b; }
+    .badge-masters { background: #f0997b; color: #4a1b0c; }
+    .badge-atp500 { background: #c9daf8; color: #042c53; }
+    .badge-atp250 { background: #e4d7f5; color: #26215c; }
+    
+    .event-info { font-size: 13px; color: #666; line-height: 1.8; margin-bottom: 1rem; }
+    .event-info strong { color: #1a1a1a; }
+    
+    .cost-box { background: #f5f5f5; padding: 1rem; border-radius: 6px; margin: 1rem 0; }
+    .cost-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; }
+    .cost-row.total { border-top: 1px solid #ddd; padding-top: 8px; font-weight: 600; }
+    
+    .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 1000; }
+    .modal.active { display: flex; }
+    .modal-content { background: white; border-radius: 12px; padding: 2rem; max-width: 600px; width: 90%; max-height: 85vh; overflow-y: auto; }
+    .modal-header { font-size: 20px; font-weight: 600; margin-bottom: 1.5rem; }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+    
+    .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 2rem; }
+    .metric { background: white; padding: 1.5rem; border-radius: 8px; border: 1px solid #e0e0e0; text-align: center; }
+    .metric-label { font-size: 12px; color: #666; font-weight: 500; margin-bottom: 8px; text-transform: uppercase; }
+    .metric-value { font-size: 28px; font-weight: 600; color: #185fa5; }
+    
+    .tips { background: #e6f1fb; border: 1px solid #b5d4f4; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; }
+    .tips h4 { color: #0c447c; margin-bottom: 12px; font-size: 14px; }
+    .tips ul { margin-left: 20px; }
+    .tips li { font-size: 13px; color: #0c447c; margin-bottom: 8px; }
+    
+    .action-buttons { display: flex; gap: 8px; margin-top: 1rem; flex-wrap: wrap; }
+    .action-buttons .btn { flex: 1; min-width: 120px; }
+    
+    .data-management { background: white; padding: 1.5rem; border-radius: 8px; margin-top: 1rem; border: 1px solid #e0e0e0; }
+    .data-management h3 { font-size: 16px; margin-bottom: 1rem; font-weight: 600; }
+    .data-buttons { display: flex; gap: 12px; flex-wrap: wrap; }
+    
+    .version-info { font-size: 12px; color: #999; margin-top: 1rem; text-align: right; }
+    
+    .school-dates { background: #eaf3de; border: 1px solid #97c459; border-radius: 8px; padding: 1.5rem; margin-bottom: 1rem; }
+    .school-dates h4 { color: #0b6d00; margin-bottom: 12px; font-size: 14px; font-weight: 600; }
+    .school-dates ul { margin-left: 20px; }
+    .school-dates li { font-size: 13px; color: #0b6d00; margin-bottom: 8px; }
+    
+    textarea { font-family: monospace; }
+    
+    .selected-indicator { position: absolute; top: 1rem; right: 1rem; width: 24px; height: 24px; background: #3b6d11; color: white; border-radius: 50%; display: none; align-items: center; justify-content: center; font-weight: bold; }
+    .card.selected .selected-indicator { display: flex; }
+    .card.selected { border: 2px solid #3b6d11; }
+
+    /* Update Modal Styles */
+    .update-modal-content { background: white; border-radius: 16px; padding: 2rem; max-width: 700px; width: 90%; max-height: 90vh; overflow-y: auto; }
+    .update-header { display: flex; align-items: center; gap: 12px; margin-bottom: 0.5rem; }
+    .update-header h2 { font-size: 22px; font-weight: 700; }
+    .update-subtitle { color: #666; font-size: 14px; margin-bottom: 1.5rem; }
+    .update-years-banner { background: linear-gradient(135deg, #f0e8ff, #e8f0ff); border: 1px solid #c8b4f5; border-radius: 10px; padding: 1rem 1.5rem; margin-bottom: 1.5rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: gap; }
+    .update-years-banner .year-pill { background: linear-gradient(135deg, #7b2ff7, #5b1fc0); color: white; border-radius: 20px; padding: 6px 18px; font-size: 15px; font-weight: 700; margin: 4px; display: inline-block; }
+    .update-section { margin-bottom: 1.5rem; }
+    .update-section-title { font-size: 14px; font-weight: 700; color: #333; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+    .update-diff { font-size: 13px; }
+    .update-diff table { width: 100%; border-collapse: collapse; }
+    .update-diff th { background: #f5f5f5; padding: 8px 12px; text-align: left; font-size: 12px; font-weight: 600; color: #555; border-bottom: 1px solid #e0e0e0; }
+    .update-diff td { padding: 8px 12px; border-bottom: 1px solid #f0f0f0; font-size: 13px; }
+    .update-diff tr:last-child td { border-bottom: none; }
+    .tag-new { background: #d4f7d4; color: #1a6b1a; border-radius: 4px; padding: 2px 7px; font-size: 11px; font-weight: 600; }
+    .tag-updated { background: #fff0cc; color: #7a5000; border-radius: 4px; padding: 2px 7px; font-size: 11px; font-weight: 600; }
+    .tag-removed { background: #ffe0e0; color: #8b1a1a; border-radius: 4px; padding: 2px 7px; font-size: 11px; font-weight: 600; }
+    .update-warning { background: #fffbe6; border: 1px solid #f5d26a; border-radius: 8px; padding: 1rem; font-size: 13px; color: #7a5000; margin-bottom: 1.5rem; }
+    .update-actions { display: flex; gap: 12px; }
+    .update-actions .btn { flex: 1; padding: 12px; font-size: 15px; }
+    .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,0.5); border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(255,255,255,0.85); justify-content: center; align-items: center; z-index: 2000; flex-direction: column; gap: 16px; }
+    .loading-overlay.active { display: flex; }
+    .loading-text { font-size: 16px; font-weight: 600; color: #5b1fc0; }
+    .loading-sub { font-size: 13px; color: #999; }
+    .big-spinner { width: 48px; height: 48px; border: 4px solid #e0d0ff; border-top-color: #7b2ff7; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>🎾 Tennis Family Tour Planner</h1>
+    <p>Professional tour planning | Shareable with your wife | Auto-update ready</p>
+    <div class="version-info">Coverage: <span id="coverageYears">-</span> | Last updated: <span id="lastUpdated">-</span></div>
+  </div>
+  
+  <div class="toolbar">
+    <button class="btn btn-primary" onclick="openAddTournament()">+ Add Tournament</button>
+    <button class="btn btn-update" onclick="openUpdateModal()">🔄 Update Schedule</button>
+    <button class="btn btn-secondary" onclick="toggleDataPanel()">⚙️ Data Management</button>
+    <button class="btn btn-success" onclick="exportData()">💾 Export (Share with wife)</button>
+    <button class="btn btn-secondary" onclick="openImportModal()">📥 Import Data</button>
+  </div>
+  
+  <div id="dataPanel" class="data-management" style="display: none;">
+    <h3>Data Management & Sharing</h3>
+    <p style="font-size: 13px; color: #666; margin-bottom: 1rem;">Save this HTML file to Google Drive, OneDrive, or Dropbox. Share with your wife via link. She can open it in any browser.</p>
+    <div class="data-buttons">
+      <button class="btn btn-primary" onclick="exportJSON()">Export as JSON (backup)</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('importFile').click()">Import from JSON</button>
+      <button class="btn btn-danger" onclick="resetAllData()">🗑️ Clear All Data</button>
+    </div>
+    <input type="file" id="importFile" accept=".json" style="display: none;" onchange="importJSON(event)">
+  </div>
+  
+  <div class="filters">
+    <div class="filter-group">
+      <label>Year:</label>
+      <select id="yearFilter" onchange="filterTournaments()">
+        <option value="all">All Years</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Level:</label>
+      <select id="levelFilter" onchange="filterTournaments()">
+        <option value="all">All Levels</option>
+        <option value="grandslam">Grand Slams</option>
+        <option value="masters">Masters 1000</option>
+        <option value="atp500">ATP 500</option>
+        <option value="atp250">ATP 250</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <label>Month:</label>
+      <select id="monthFilter" onchange="filterTournaments()">
+        <option value="">All Months</option>
+        <option value="1">January</option>
+        <option value="2">February</option>
+        <option value="3">March</option>
+        <option value="4">April</option>
+        <option value="5">May</option>
+        <option value="6">June</option>
+        <option value="7">July</option>
+        <option value="8">August</option>
+        <option value="9">September</option>
+        <option value="10">October</option>
+        <option value="11">November</option>
+        <option value="12">December</option>
+      </select>
+    </div>
+  </div>
+  
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('calendar', this)">📅 Calendar</button>
+    <button class="tab" onclick="switchTab('planning', this)">✈️ Trip Planning</button>
+    <button class="tab" onclick="switchTab('budget', this)">💰 Budget & Costs</button>
+    <button class="tab" onclick="switchTab('vacations', this)">🏖️ Vacation Schedule</button>
+    <button class="tab" onclick="switchTab('tips', this)">💡 Family Tips</button>
+  </div>
+  
+  <!-- Calendar Tab -->
+  <div id="calendar" class="content active">
+    <div class="grid" id="tournamentGrid"></div>
+  </div>
+  
+  <!-- Trip Planning Tab -->
+  <div id="planning" class="content">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">🛫 Selected Trips</div>
+        <div class="card-subtitle" id="selectedCount">No tournaments selected yet</div>
+      </div>
+      <div id="selectedTrips" style="margin-top: 1rem;"></div>
+    </div>
+    
+    <div class="school-dates" id="schoolDatesBox">
+      <!-- dynamically populated -->
+    </div>
+  </div>
+  
+  <!-- Budget Tab -->
+  <div id="budget" class="content">
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-label">Selected Events</div>
+        <div class="metric-value" id="metricEvents">0</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Total Days</div>
+        <div class="metric-value" id="metricDays">0</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Total Cost</div>
+        <div class="metric-value" id="metricCost">€0</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Average per Trip</div>
+        <div class="metric-value" id="metricAvg">€0</div>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">Cost Breakdown</div>
+      </div>
+      <div id="costBreakdown" style="font-size: 13px; color: #666;">Select tournaments to see cost estimates</div>
+    </div>
+  </div>
+  
+  <!-- Vacation Schedule Tab -->
+  <div id="vacations" class="content">
+    <div id="vacationContent"><!-- dynamically populated --></div>
+  </div>
+  
+  <!-- Tips Tab -->
+  <div id="tips" class="content">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">💰 Money-Saving Strategies</div>
+      </div>
+      <div class="tips" style="background: none; border: none; padding: 0;">
+        <ul>
+          <li><strong>Book 4-6 months ahead:</strong> Save 40-60% on flights</li>
+          <li><strong>Use Airbnb:</strong> 2-3 bed apartments (€1,200-1,800/week) vs. 2 hotel rooms (€2,400-3,600)</li>
+          <li><strong>Return flight on finals day:</strong> Prices drop 20-30% as event ends</li>
+          <li><strong>Grocery shop locally:</strong> Cook breakfasts + pack lunches (save €200-300/week)</li>
+          <li><strong>Kids tickets:</strong> Children under 12 often get 50% off; kids 5 may be free</li>
+          <li><strong>Travel insurance once/year:</strong> €150-200 covers all trips</li>
+          <li><strong>Avoid official partner hotels:</strong> Book independently, save 40%</li>
+          <li><strong>Use cash-back cards:</strong> 3-5% on flights = €150-300 per trip</li>
+          <li><strong>Rail pass for Europe:</strong> Eurail cheaper than flights between European tournaments</li>
+          <li><strong>Group booking:</strong> Partner with other families for 10-15% hotel discount</li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">👨‍👩‍👧‍👦 Family Travel (Ages 5 & 8)</div>
+      </div>
+      <div class="tips" style="background: none; border: none; padding: 0;">
+        <ul>
+          <li><strong>Accommodation:</strong> Book suites or 2-bed apartments (kids need separate sleeping space)</li>
+          <li><strong>Match timing:</strong> Skip first round; jump in for quarterfinals (better tennis + kids less bored)</li>
+          <li><strong>Bring entertainment:</strong> Portable games, headphones, snacks (matches = 3+ hours)</li>
+          <li><strong>Kids' clubs:</strong> Many tournaments offer kids' tennis clinics (€30-50, highly recommended)</li>
+          <li><strong>Meal budget:</strong> €40-60/day in Portugal/Spain, €60-100 in UK/France</li>
+          <li><strong>School absences:</strong> Max 2 weeks/year - align with holidays when possible</li>
+          <li><strong>Jet lag:</strong> Arrive 3-4 days early for long-haul (Australia, US)</li>
+          <li><strong>Check vaccines 6 weeks before:</strong> Yellow fever required for some destinations</li>
+          <li><strong>Pool/kids club hotels:</strong> Invest slightly more for breaks during tournament days</li>
+          <li><strong>Flight timing:</strong> Avoid red-eyes with young kids; window seats for parents, aisle for bathroom access</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit Tournament Modal -->
+<div id="tournamentModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">Add/Edit Tournament</div>
+    <form id="tournamentForm" onsubmit="saveTournament(event)">
+      <div class="form-group">
+        <label>Tournament Name *</label>
+        <input type="text" id="tourn_name" required>
+      </div>
+      <div class="form-group">
+        <label>Level *</label>
+        <select id="tourn_level" required>
+          <option value="">-- Select --</option>
+          <option value="grandslam">Grand Slam</option>
+          <option value="masters">Masters 1000</option>
+          <option value="atp500">ATP 500</option>
+          <option value="atp250">ATP 250</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>City *</label>
+        <input type="text" id="tourn_city" required>
+      </div>
+      <div class="form-group">
+        <label>Country *</label>
+        <input type="text" id="tourn_country" required>
+      </div>
+      <div class="form-group">
+        <label>Dates (e.g., "Jun 15-22") *</label>
+        <input type="text" id="tourn_dates" required>
+      </div>
+      <div class="form-group">
+        <label>Start Date (YYYY-MM-DD) *</label>
+        <input type="date" id="tourn_startdate" required>
+      </div>
+      <div class="form-group">
+        <label>Estimated Cost (€) *</label>
+        <input type="number" id="tourn_cost" min="0" step="100" required>
+      </div>
+      <div class="form-group">
+        <label>Duration (days) *</label>
+        <input type="number" id="tourn_days" min="1" max="30" required>
+      </div>
+      <div class="form-group">
+        <label>Notes</label>
+        <textarea id="tourn_notes" placeholder="e.g., Kids clinics available, family-friendly accommodations..."></textarea>
+      </div>
+      <div style="display: flex; gap: 12px;">
+        <button type="submit" class="btn btn-primary" style="flex: 1;">Save Tournament</button>
+        <button type="button" class="btn btn-secondary" style="flex: 1;" onclick="closeModal('tournamentModal')">Cancel</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Import Modal -->
+<div id="importModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">Import Tournament Data</div>
+    <p style="font-size: 13px; color: #666; margin-bottom: 1rem;">Paste JSON data exported from another instance:</p>
+    <textarea id="importText" style="width: 100%; height: 300px; padding: 12px; border: 1px solid #ddd; border-radius: 6px; font-family: monospace; margin-bottom: 1rem;"></textarea>
+    <div style="display: flex; gap: 12px;">
+      <button class="btn btn-success" style="flex: 1;" onclick="confirmImport()">Import</button>
+      <button class="btn btn-secondary" style="flex: 1;" onclick="closeModal('importModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Update Schedule Modal -->
+<div id="updateModal" class="modal">
+  <div class="update-modal-content modal-content" style="max-width: 720px;">
+    <div class="update-header">
+      <span style="font-size: 28px;">🔄</span>
+      <h2>Update Tournament Schedule</h2>
+    </div>
+    <p class="update-subtitle" id="updateSubtitle"></p>
+
+    <div class="update-years-banner" id="updateYearsBanner"></div>
+
+    <div class="update-warning" id="updateWarning"></div>
+
+    <div class="update-section">
+      <div class="update-section-title">📋 Changes Preview</div>
+      <div class="update-diff" id="updateDiffTable"></div>
+    </div>
+
+    <div class="update-section" id="customDatesSection">
+      <div class="update-section-title">📅 Confirm Dates for New Year</div>
+      <p style="font-size: 13px; color: #666; margin-bottom: 12px;">The new year's tournaments are pre-filled with estimated dates based on historical patterns. You can adjust before saving.</p>
+      <div id="customDatesForm"></div>
+    </div>
+
+    <div class="update-actions">
+      <button class="btn btn-update" id="confirmUpdateBtn" onclick="confirmUpdate()">✅ Apply Update</button>
+      <button class="btn btn-secondary" onclick="closeModal('updateModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="big-spinner"></div>
+  <div class="loading-text">Updating Schedule...</div>
+  <div class="loading-sub">Adding new year, removing old data</div>
+</div>
+
+<script>
+// ─── Data Storage ───────────────────────────────────────────────────────────
+let tournaments = [];
+let selectedTournaments = [];
+let pendingUpdateData = null;
+
+// ─── Tournament Template Factory ────────────────────────────────────────────
+// Generates tournaments for any year based on historical ATP patterns.
+// Dates shift slightly year-to-year but patterns are consistent.
+function generateTournamentsForYear(year) {
+  // Base date offsets by tournament (week of year, roughly)
+  // These mirror real ATP calendar patterns
+  const template = [
+    { baseName: "Australian Open",      level: "grandslam", city: "Melbourne",       country: "Australia",   monthStart: 1,  dayStart: 13, durationDays: 14, tripDays: 6,  cost: 3500, notes: "Fly 3-4 days early for jet lag. Aligns with school Christmas break extension." },
+    { baseName: "ATP 500 Rotterdam",    level: "atp500",    city: "Rotterdam",       country: "Netherlands", monthStart: 2,  dayStart: 2,  durationDays: 7,  tripDays: 4,  cost: 1800 },
+    { baseName: "Dubai Duty Free",      level: "masters",   city: "Dubai",           country: "UAE",         monthStart: 2,  dayStart: 24, durationDays: 7,  tripDays: 5,  cost: 2200 },
+    { baseName: "Indian Wells Masters", level: "masters",   city: "Indian Wells",    country: "USA",         monthStart: 3,  dayStart: 5,  durationDays: 14, tripDays: 6,  cost: 2400, notes: "Combine with Miami for back-to-back US trip." },
+    { baseName: "Miami Masters",        level: "masters",   city: "Miami",           country: "USA",         monthStart: 3,  dayStart: 19, durationDays: 14, tripDays: 6,  cost: 2300, notes: "Beach city – kids love it." },
+    { baseName: "Monte Carlo Masters",  level: "masters",   city: "Monte Carlo",     country: "Monaco",      monthStart: 4,  dayStart: 8,  durationDays: 7,  tripDays: 5,  cost: 2100 },
+    { baseName: "Rome Masters",         level: "masters",   city: "Rome",            country: "Italy",       monthStart: 5,  dayStart: 6,  durationDays: 7,  tripDays: 5,  cost: 1900, notes: "City sightseeing easy to combine with tournament." },
+    { baseName: "French Open",          level: "grandslam", city: "Paris",           country: "France",      monthStart: 5,  dayStart: 25, durationDays: 15, tripDays: 7,  cost: 3200, notes: "Book Airbnb well ahead – Paris is expensive." },
+    { baseName: "Wimbledon",            level: "grandslam", city: "London",          country: "England",     monthStart: 6,  dayStart: 24, durationDays: 14, tripDays: 8,  cost: 3800, notes: "Ballot & queue. Book refundable hotel." },
+    { baseName: "Hamburg ATP 500",      level: "atp500",    city: "Hamburg",         country: "Germany",     monthStart: 7,  dayStart: 21, durationDays: 7,  tripDays: 4,  cost: 1700, notes: "Close to Lisbon – cheap flights." },
+    { baseName: "Canada Masters",       level: "masters",   city: "Toronto/Montreal",country: "Canada",      monthStart: 8,  dayStart: 4,  durationDays: 7,  tripDays: 5,  cost: 2500 },
+    { baseName: "Cincinnati Masters",   level: "masters",   city: "Cincinnati",      country: "USA",         monthStart: 8,  dayStart: 11, durationDays: 7,  tripDays: 5,  cost: 2000, notes: "Back-to-back with Canada for US swing." },
+    { baseName: "US Open",             level: "grandslam", city: "New York",        country: "USA",         monthStart: 8,  dayStart: 25, durationDays: 14, tripDays: 8,  cost: 3600, notes: "NYC! Kids will love the city." },
+    { baseName: "Shanghai Masters",     level: "masters",   city: "Shanghai",        country: "China",       monthStart: 10, dayStart: 6,  durationDays: 7,  tripDays: 5,  cost: 2300 },
+    { baseName: "Paris Masters",        level: "masters",   city: "Paris",           country: "France",      monthStart: 10, dayStart: 27, durationDays: 7,  tripDays: 5,  cost: 2100, notes: "School term – check absences." },
+    { baseName: "ATP Finals",           level: "masters",   city: "Turin",           country: "Italy",       monthStart: 11, dayStart: 10, durationDays: 8,  tripDays: 5,  cost: 2200 },
+  ];
+
+  return template.map(t => {
+    // Slight year-to-year variation (±1-3 days) to mimic real calendar shifts
+    const dayOffset = ((year - 2026) * 2) % 3; // cycles 0,2,1,0,2,1...
+    const startDate = new Date(year, t.monthStart - 1, t.dayStart + dayOffset);
+    const endDate = new Date(year, t.monthStart - 1, t.dayStart + dayOffset + t.durationDays - 1);
+
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const startM = months[startDate.getMonth()];
+    const endM = months[endDate.getMonth()];
+    const dateStr = startM === endM
+      ? `${startM} ${startDate.getDate()}-${endDate.getDate()}`
+      : `${startM} ${startDate.getDate()}-${endM} ${endDate.getDate()}`;
+
+    const pad = n => String(n).padStart(2,'0');
+    const isoDate = `${year}-${pad(startDate.getMonth()+1)}-${pad(startDate.getDate())}`;
+
+    return {
+      name: t.baseName,
+      level: t.level,
+      city: t.city,
+      country: t.country,
+      dates: dateStr,
+      startDate: isoDate,
+      cost: t.cost,
+      days: t.tripDays,
+      year: year,
+      notes: t.notes || ''
+    };
+  });
+}
+
+// ─── School Holidays Template ─────────────────────────────────────────────
+function getSchoolHolidays(year) {
+  return {
+    summer: `19 Jun - 31 Aug ${year} (10 weeks)`,
+    christmas: `22 Dec ${year} - 5 Jan ${year+1}`,
+    februaryHalfTerm: `16-20 Feb ${year+1}`,
+    easter: `29 Mar - 12 Apr ${year+1}`,
+    mayHalfTerm: `24-28 May ${year+1}`,
+  };
+}
+
+// ─── Vacation Content ────────────────────────────────────────────────────
+function renderVacationContent() {
+  const years = getActiveYears();
+  const y1 = years[0], y2 = years[1];
+
+  const html = `
+    <div class="tips">
+      <h4>🎯 ${y1} – Recommended Plan</h4>
+      <strong style="color: #0c447c;">Summer (Jun-Aug):</strong> Hamburg ATP 500 → Canada Masters → Cincinnati Masters → US Open
+      <br><br>
+      <strong style="color: #0c447c;">Fall (Sep-Oct):</strong> Shanghai Masters → Paris Masters
+      <br><br>
+      <strong style="color: #0c447c;">Year-end (Dec-Jan):</strong> Australian Open ${y2} – aligns with Christmas break
+    </div>
+    <div class="tips">
+      <h4>🎯 ${y2} – Optimal Schedule</h4>
+      <strong style="color: #0c447c;">Spring:</strong> Australian Open (Jan) → Dubai (Feb) → Indian Wells/Miami (Mar)
+      <br><br>
+      <strong style="color: #0c447c;">Late Spring/Summer:</strong> Monte Carlo (Apr) → Rome (May) → French Open (May-Jun) → Hamburg (Jul) → Wimbledon (Jun)
+      <br><br>
+      <strong style="color: #0c447c;">Summer/Fall:</strong> Canada (Aug) → Cincinnati (Aug) → US Open (Aug-Sep)
+    </div>
+  `;
+  document.getElementById('vacationContent').innerHTML = html;
+}
+
+function renderSchoolDates() {
+  const years = getActiveYears();
+  const h = getSchoolHolidays(years[0]);
+  document.getElementById('schoolDatesBox').innerHTML = `
+    <h4>📚 Portugal School Holidays ${years[0]}-${years[1]}</h4>
+    <ul>
+      <li><strong>Summer holidays:</strong> ${h.summer}</li>
+      <li><strong>Christmas break:</strong> ${h.christmas}</li>
+      <li><strong>February half-term:</strong> ${h.februaryHalfTerm}</li>
+      <li><strong>Easter holidays:</strong> ${h.easter}</li>
+      <li><strong>May half-term:</strong> ${h.mayHalfTerm}</li>
+    </ul>
+  `;
+}
+
+// ─── Active Years Helper ─────────────────────────────────────────────────
+function getActiveYears() {
+  const years = [...new Set(tournaments.map(t => t.year))].sort();
+  if (years.length === 0) {
+    const now = new Date().getFullYear();
+    return [now, now + 1];
+  }
+  return years;
+}
+
+function updateYearFilter() {
+  const years = getActiveYears();
+  const sel = document.getElementById('yearFilter');
+  const current = sel.value;
+  sel.innerHTML = '<option value="all">All Years</option>' + years.map(y => `<option value="${y}">${y}</option>`).join('');
+  if (years.includes(parseInt(current))) sel.value = current;
+  document.getElementById('coverageYears').textContent = years.join(' & ');
+}
+
+// ─── Update Modal ────────────────────────────────────────────────────────
+function openUpdateModal() {
+  const years = getActiveYears();
+  const oldYear = years[0];
+  const newYear = years[years.length - 1] + 1;
+  const keepYear = years[years.length - 1];
+
+  const oldCount = tournaments.filter(t => t.year === oldYear).length;
+  const keepTournaments = tournaments.filter(t => t.year === keepYear);
+  const newTournaments = generateTournamentsForYear(newYear);
+
+  pendingUpdateData = { oldYear, newYear, keepYear, oldCount, newTournaments };
+
+  document.getElementById('updateSubtitle').textContent =
+    `Currently showing ${years.join(' & ')}. This update will drop ${oldYear} and add ${newYear}.`;
+
+  document.getElementById('updateYearsBanner').innerHTML = `
+    <div>
+      <span style="font-size: 13px; color: #888;">Remove:</span>
+      <span class="year-pill" style="background: #aaa; margin-left: 8px;">${oldYear} (${oldCount} events)</span>
+    </div>
+    <div style="font-size: 20px; color: #aaa;">→</div>
+    <div>
+      <span style="font-size: 13px; color: #888;">Keep:</span>
+      <span class="year-pill" style="margin-left: 8px;">${keepYear}</span>
+    </div>
+    <div style="font-size: 20px; color: #aaa;">+</div>
+    <div>
+      <span style="font-size: 13px; color: #888;">Add:</span>
+      <span class="year-pill" style="margin-left: 8px;">${newYear} (${newTournaments.length} events)</span>
+    </div>
+  `;
+
+  document.getElementById('updateWarning').innerHTML =
+    `⚠️ <strong>Note:</strong> Removing <strong>${oldYear}</strong> will also clear any trips you've selected from that year. Your ${keepYear} selections and custom events stay untouched. This action cannot be undone (export a backup first if needed).`;
+
+  // Build diff table
+  const rows = newTournaments.map(t => `
+    <tr>
+      <td>${t.name}</td>
+      <td>${t.city}, ${t.country}</td>
+      <td>${t.dates}</td>
+      <td>€${t.cost.toLocaleString()}</td>
+      <td><span class="tag-new">NEW</span></td>
+    </tr>
+  `).join('');
+
+  document.getElementById('updateDiffTable').innerHTML = `
+    <p style="font-size:13px; color:#666; margin-bottom: 10px;">
+      <strong>${oldCount}</strong> ${oldYear} events will be removed. 
+      <strong>${newTournaments.length}</strong> ${newYear} events will be added:
+    </p>
+    <table>
+      <thead><tr><th>Tournament</th><th>Location</th><th>Dates</th><th>Cost Est.</th><th>Status</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>
+  `;
+
+  document.getElementById('updateModal').classList.add('active');
+}
+
+function confirmUpdate() {
+  if (!pendingUpdateData) return;
+
+  const overlay = document.getElementById('loadingOverlay');
+  overlay.classList.add('active');
+  closeModal('updateModal');
+
+  setTimeout(() => {
+    const { oldYear, newYear, newTournaments } = pendingUpdateData;
+
+    // Remove old year
+    tournaments = tournaments.filter(t => t.year !== oldYear);
+    selectedTournaments = selectedTournaments.filter(t => t.year !== oldYear);
+
+    // Add new year
+    tournaments = [...tournaments, ...newTournaments];
+
+    // Sort by startDate
+    tournaments.sort((a, b) => new Date(a.startDate) - new Date(b.startDate));
+
+    saveData();
+    updateYearFilter();
+    filterTournaments();
+    updateMetrics();
+    renderSelectedTrips();
+    renderSchoolDates();
+    renderVacationContent();
+
+    overlay.classList.remove('active');
+    pendingUpdateData = null;
+
+    alert(`✅ Schedule updated!\n\n• ${oldYear} removed\n• ${newTournaments.length} ${newYear} events added\n\nRemember to export and share the updated file with your wife.`);
+  }, 800);
+}
+
+// ─── Core Init ───────────────────────────────────────────────────────────
+function init() {
+  loadData();
+  if (tournaments.length === 0) {
+    // Seed with 2026 H2 + full 2027
+    const t2026 = generateTournamentsForYear(2026).filter(t => {
+      const m = new Date(t.startDate).getMonth() + 1;
+      return m >= 6; // June onwards
+    });
+    const t2027 = generateTournamentsForYear(2027);
+    tournaments = [...t2026, ...t2027];
+    saveData();
+  }
+  updateYearFilter();
+  filterTournaments();
+  updateMetrics();
+  updateLastUpdated();
+  renderSchoolDates();
+  renderVacationContent();
+}
+
+function loadData() {
+  const stored = localStorage.getItem('tennisPlanner_v2');
+  if (stored) {
+    try { tournaments = JSON.parse(stored); } catch(e) { tournaments = []; }
+  }
+}
+
+function saveData() {
+  localStorage.setItem('tennisPlanner_v2', JSON.stringify(tournaments));
+  updateLastUpdated();
+}
+
+function updateLastUpdated() {
+  const now = new Date();
+  document.getElementById('lastUpdated').textContent =
+    now.toLocaleDateString() + ' ' + now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+}
+
+// ─── Rendering ──────────────────────────────────────────────────────────
+function getBadgeClass(level) {
+  return { grandslam: 'badge-grandslam', masters: 'badge-masters', atp500: 'badge-atp500', atp250: 'badge-atp250' }[level] || 'badge-atp250';
+}
+function getBadgeText(level) {
+  return { grandslam: 'Grand Slam', masters: 'Masters 1000', atp500: 'ATP 500', atp250: 'ATP 250' }[level] || level;
+}
+
+function filterTournaments() {
+  const year = document.getElementById('yearFilter').value;
+  const level = document.getElementById('levelFilter').value;
+  const month = document.getElementById('monthFilter').value;
+  
+  let filtered = tournaments;
+  if (year !== 'all') filtered = filtered.filter(t => t.year == year);
+  if (level !== 'all') filtered = filtered.filter(t => t.level === level);
+  if (month) filtered = filtered.filter(t => (new Date(t.startDate).getMonth() + 1).toString() === month);
+  
+  renderTournaments(filtered);
+}
+
+function renderTournaments(toRender = tournaments) {
+  const html = toRender.map(t => {
+    const origIdx = tournaments.indexOf(t);
+    const isSelected = selectedTournaments.some(s => s.name === t.name && s.year === t.year);
+    return `
+      <div class="card ${isSelected ? 'selected' : ''}" onclick="toggleSelection(${origIdx})">
+        <div class="selected-indicator">✓</div>
+        <div class="card-header">
+          <span class="badge ${getBadgeClass(t.level)}">${getBadgeText(t.level)}</span>
+          <div class="card-title">${t.name} <span style="font-size:11px;color:#999;font-weight:400;">${t.year}</span></div>
+          <div class="card-subtitle">${t.dates}</div>
+        </div>
+        <div class="event-info">
+          <p><strong>📍</strong> ${t.city}, ${t.country}</p>
+          <p><strong>📅</strong> ${t.days} days</p>
+          <p><strong>💰</strong> Est. €${t.cost.toLocaleString()}</p>
+          ${t.notes ? `<p><strong>📌</strong> ${t.notes}</p>` : ''}
+        </div>
+        <div class="action-buttons">
+          <button class="btn btn-secondary" style="font-size:12px;" onclick="editTournament(${origIdx}); event.stopPropagation();">Edit</button>
+          <button class="btn btn-danger" style="font-size:12px;" onclick="deleteTournament(${origIdx}); event.stopPropagation();">Delete</button>
+        </div>
+      </div>`;
+  }).join('');
+  document.getElementById('tournamentGrid').innerHTML = html || '<p style="color:#999; font-size:14px; padding: 20px;">No tournaments match the current filters.</p>';
+}
+
+function toggleSelection(idx) {
+  const t = tournaments[idx];
+  const existing = selectedTournaments.findIndex(s => s.name === t.name && s.year === t.year);
+  if (existing >= 0) selectedTournaments.splice(existing, 1);
+  else selectedTournaments.push({...t});
+  filterTournaments();
+  updateMetrics();
+  renderSelectedTrips();
+}
+
+function renderSelectedTrips() {
+  if (selectedTournaments.length === 0) {
+    document.getElementById('selectedCount').textContent = 'No tournaments selected';
+    document.getElementById('selectedTrips').innerHTML = '<p style="font-size:13px; color:#999;">Click on tournament cards to select them</p>';
+    return;
+  }
+  document.getElementById('selectedCount').textContent = `${selectedTournaments.length} tournament${selectedTournaments.length !== 1 ? 's' : ''} selected`;
+  document.getElementById('selectedTrips').innerHTML = selectedTournaments.map(t => `
+    <div class="card" style="margin-bottom:1rem;">
+      <div class="card-header">
+        <span class="badge ${getBadgeClass(t.level)}">${getBadgeText(t.level)}</span>
+        <div class="card-title">${t.name} (${t.year})</div>
+        <div class="card-subtitle">${t.dates} • ${t.city}</div>
+      </div>
+      <div class="cost-box">
+        <div class="cost-row"><span>Flights (4 people)</span><span>€${Math.round(t.cost * 0.35).toLocaleString()}</span></div>
+        <div class="cost-row"><span>Accommodation (${t.days} nights)</span><span>€${Math.round(t.cost * 0.45).toLocaleString()}</span></div>
+        <div class="cost-row"><span>Tickets & misc</span><span>€${Math.round(t.cost * 0.20).toLocaleString()}</span></div>
+        <div class="cost-row total"><span>Trip Total</span><span>€${t.cost.toLocaleString()}</span></div>
+      </div>
+      <button class="btn btn-secondary" style="width:100%;font-size:12px;" onclick="removeSelection('${t.name}', ${t.year})">Remove from Selection</button>
+    </div>`).join('');
+}
+
+function removeSelection(name, year) {
+  selectedTournaments = selectedTournaments.filter(t => !(t.name === name && t.year === year));
+  filterTournaments(); updateMetrics(); renderSelectedTrips();
+}
+
+function updateMetrics() {
+  const events = selectedTournaments.length;
+  const days = selectedTournaments.reduce((s,t) => s + t.days, 0);
+  const total = selectedTournaments.reduce((s,t) => s + t.cost, 0);
+  const avg = events > 0 ? Math.round(total / events) : 0;
+  document.getElementById('metricEvents').textContent = events;
+  document.getElementById('metricDays').textContent = days;
+  document.getElementById('metricCost').textContent = '€' + total.toLocaleString();
+  document.getElementById('metricAvg').textContent = '€' + avg.toLocaleString();
+  if (events === 0) {
+    document.getElementById('costBreakdown').innerHTML = '<p style="font-size:13px; color:#999;">Select tournaments from calendar to see cost breakdown</p>';
+    return;
+  }
+  document.getElementById('costBreakdown').innerHTML =
+    selectedTournaments.map(t => `<div class="cost-row"><span>${t.name} (${t.year})</span><span>€${t.cost.toLocaleString()}</span></div>`).join('') +
+    `<div class="cost-row total"><span>Total Estimated Cost</span><span>€${total.toLocaleString()}</span></div>`;
+}
+
+function switchTab(tab, el) {
+  document.querySelectorAll('.content').forEach(e => e.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(e => e.classList.remove('active'));
+  document.getElementById(tab).classList.add('active');
+  el.classList.add('active');
+}
+
+// ─── CRUD ────────────────────────────────────────────────────────────────
+function openAddTournament() {
+  ['tourn_name','tourn_city','tourn_country','tourn_dates','tourn_startdate','tourn_notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('tourn_level').value = '';
+  document.getElementById('tourn_cost').value = '';
+  document.getElementById('tourn_days').value = '';
+  document.getElementById('tournamentForm').onsubmit = saveTournament;
+  document.getElementById('tournamentModal').classList.add('active');
+}
+
+function buildTournamentFromForm() {
+  const date = new Date(document.getElementById('tourn_startdate').value);
+  return {
+    name: document.getElementById('tourn_name').value,
+    level: document.getElementById('tourn_level').value,
+    city: document.getElementById('tourn_city').value,
+    country: document.getElementById('tourn_country').value,
+    dates: document.getElementById('tourn_dates').value,
+    startDate: document.getElementById('tourn_startdate').value,
+    cost: parseInt(document.getElementById('tourn_cost').value),
+    days: parseInt(document.getElementById('tourn_days').value),
+    year: date.getFullYear(),
+    notes: document.getElementById('tourn_notes').value || ''
+  };
+}
+
+function saveTournament(e) {
+  e.preventDefault();
+  tournaments.push(buildTournamentFromForm());
+  tournaments.sort((a,b) => new Date(a.startDate) - new Date(b.startDate));
+  saveData(); updateYearFilter(); filterTournaments();
+  closeModal('tournamentModal');
+  alert('Tournament added!');
+}
+
+function editTournament(idx) {
+  const t = tournaments[idx];
+  document.getElementById('tourn_name').value = t.name;
+  document.getElementById('tourn_level').value = t.level;
+  document.getElementById('tourn_city').value = t.city;
+  document.getElementById('tourn_country').value = t.country;
+  document.getElementById('tourn_dates').value = t.dates;
+  document.getElementById('tourn_startdate').value = t.startDate;
+  document.getElementById('tourn_cost').value = t.cost;
+  document.getElementById('tourn_days').value = t.days;
+  document.getElementById('tourn_notes').value = t.notes || '';
+  document.getElementById('tournamentForm').onsubmit = (e) => {
+    e.preventDefault();
+    tournaments[idx] = buildTournamentFromForm();
+    tournaments.sort((a,b) => new Date(a.startDate) - new Date(b.startDate));
+    saveData(); updateYearFilter(); filterTournaments();
+    closeModal('tournamentModal');
+    document.getElementById('tournamentForm').onsubmit = saveTournament;
+    alert('Tournament updated!');
+  };
+  document.getElementById('tournamentModal').classList.add('active');
+}
+
+function deleteTournament(idx) {
+  if (confirm('Delete this tournament?')) {
+    const t = tournaments[idx];
+    selectedTournaments = selectedTournaments.filter(s => !(s.name === t.name && s.year === t.year));
+    tournaments.splice(idx, 1);
+    saveData(); updateYearFilter(); filterTournaments(); updateMetrics();
+  }
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+function toggleDataPanel() {
+  const p = document.getElementById('dataPanel');
+  p.style.display = p.style.display === 'none' ? 'block' : 'none';
+}
+
+// ─── Export / Import ──────────────────────────────────────────────────────
+function exportJSON() {
+  const data = { tournaments, exported: new Date().toISOString() };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url;
+  a.download = `tennis-planner-backup-${new Date().toISOString().split('T')[0]}.json`;
+  a.click(); URL.revokeObjectURL(url);
+}
+
+function exportData() {
+  const data = { tournaments, exported: new Date().toISOString() };
+  const link = document.createElement('a');
+  link.href = 'data:application/json,' + encodeURIComponent(JSON.stringify(data, null, 2));
+  link.download = `tennis-planner-${new Date().toISOString().split('T')[0]}.json`;
+  link.click();
+  alert('Data exported! Share this file with your wife via email, Google Drive, or Dropbox.');
+}
+
+function openImportModal() { document.getElementById('importModal').classList.add('active'); }
+
+function confirmImport() {
+  try {
+    const json = JSON.parse(document.getElementById('importText').value);
+    tournaments = json.tournaments || [];
+    saveData(); updateYearFilter(); filterTournaments(); updateMetrics();
+    closeModal('importModal');
+    alert('Data imported successfully!');
+  } catch (e) { alert('Invalid JSON. Please check the format.'); }
+}
+
+function importJSON(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const json = JSON.parse(e.target.result);
+      tournaments = json.tournaments || [];
+      saveData(); updateYearFilter(); filterTournaments(); updateMetrics();
+      alert('File imported successfully!');
+    } catch(err) { alert('Invalid JSON file.'); }
+  };
+  reader.readAsText(file);
+}
+
+function resetAllData() {
+  if (confirm('⚠️ Delete ALL tournaments and reset to defaults? This cannot be undone.')) {
+    const t2026 = generateTournamentsForYear(2026).filter(t => new Date(t.startDate).getMonth() + 1 >= 6);
+    const t2027 = generateTournamentsForYear(2027);
+    tournaments = [...t2026, ...t2027];
+    selectedTournaments = [];
+    saveData(); updateYearFilter(); filterTournaments(); updateMetrics(); renderSelectedTrips();
+    alert('Data reset to defaults');
+  }
+}
+
+// ─── Launch ──────────────────────────────────────────────────────────────
+init();
+</script>
+
+</body>
+</html>
